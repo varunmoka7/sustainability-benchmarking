@@ -1,0 +1,55 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js build output
+/.next/
+/out/
+
+# Production (some frameworks might use /build)
+# /build
+
+# Misc
+.DS_Store
+*.pem
+*.log
+
+# Local Environment Variables
+.env*.local
+
+# Editor directories and files (optional, but good practice)
+.idea
+# .vscode/* # Commented out to ensure VS Code settings in project are shareable if desired
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
+*.sublime-workspace
+
+# If you have specific log files from yarn or pnpm:
+# yarn-debug.log*
+# yarn-error.log*
+# pnpm-debug.log*
+
+# SQLite database file - We are NOT ignoring this as per user request
+# corporate_emissions.sqlite
+
+# Python virtual environment (if you create one in the root)
+# venv/
+# .venv/
+# env/
+# .env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints

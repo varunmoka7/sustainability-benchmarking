@@ -1,0 +1,6 @@
+[theme]
+primaryColor="#5DADE2" # accent_scope1_cool_blue
+backgroundColor="#2C3E50" # background_deep_slate
+secondaryBackgroundColor="#34495E" # neutral_dark_element_bg
+textColor="#FFFFFF" # text_primary_on_slate
+font="sans serif" # Use Streamlit's default sans-serif stack

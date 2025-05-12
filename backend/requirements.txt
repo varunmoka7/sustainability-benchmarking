@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pandas
+requests
+beautifulsoup4
+pypdf2
+python-dotenv
+pytest

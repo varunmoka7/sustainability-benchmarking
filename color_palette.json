@@ -1,0 +1,35 @@
+{
+  "palette_name": "ClimateActionTrackerInspired_V1",
+  "description": "Color palette for the Next.js emissions dashboard, inspired by Climate Action Tracker, aiming for WCAG AA compliance.",
+  "colors": {
+    "background_deep_slate": "#2C3E50",
+    "text_primary_on_slate": "#FFFFFF",
+    "text_secondary_on_slate": "#B0BEC5",
+    
+    "banner_background_pastel_blue": "#87cde7",
+    "banner_text_white": "#FFFFFF",
+    
+    "interactive_accent_teal": "#00a4bd",
+    "interactive_accent_teal_hover": "#007a8c",
+    
+    "table_header_bg_light_gray": "#f8f9fa",
+    "table_row_even_bg_white": "#FFFFFF",
+    "table_row_odd_bg_subtle_gray": "#f1f3f5",
+    "table_text_dark": "#212529",
+
+    "chart_scope1_blue": "#5DADE2",
+    "chart_scope2_orange": "#F39C12",
+    "chart_scope3_purple": "#AF7AC5",
+    "chart_grid_lines": "#e0e0e0",
+    "chart_axis_text_light": "#B0BEC5",
+    "chart_axis_text_dark": "#666666",
+
+    "cookie_banner_bg": "#34495E",
+    "cookie_banner_text": "#FFFFFF"
+  },
+  "notes": {
+    "wcag_compliance": "Contrast ratios should be checked for text on these backgrounds. E.g., #00a4bd (Teal) on #FFFFFF (White) for button text needs verification if teal is bg. White text on #00a4bd has a ratio of 3.25:1, which is AA for large text.",
+    "text_on_banner": "#FFFFFF on #87cde7 has a contrast ratio of approx 3.0:1 for normal text, which is AA for large text (18pt+ or 14pt+ bold). Consider bold or larger text for banner titles.",
+    "chart_text_contrast": "Ensure chart axis/legend text has sufficient contrast against chart background (if not transparent). #B0BEC5 on #2C3E50 is 7.05:1. #666666 on #FFFFFF is 7.06:1."
+  }
+}

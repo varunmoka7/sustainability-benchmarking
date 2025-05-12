@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  You can add custom global styles here if needed.
+  For example, if you choose to use a specific web font like Inter with next/font,
+  you might not need to import it here, but rather in your main layout file.
+  However, if you were using a traditional CSS font import, it would go here.
+*/
+
+body {
+  /* Default background and text colors will be applied via Tailwind classes 
+     or directly in your main layout component, using colors from tailwind.config.ts */
+  /* Example: bg-deep-slate text-primary-text-on-slate */
+  /* We'll apply these in the layout component for better Next.js App Router compatibility. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Example of a global style for harmonized headings if not done via components */
+/* You might prefer to style these with Tailwind utility classes directly in your components */
+/* 
+h1, h2, h3, h4, h5, h6 { 
+  @apply font-sans; 
+} 
+*/
+
+/* For visually hidden labels (accessibility) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
