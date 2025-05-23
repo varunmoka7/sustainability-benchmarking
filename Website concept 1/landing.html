@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Data Scraper - CarbonFlow</title>
+  <link rel="stylesheet" href="style.css"> <!-- Link to your existing or a new stylesheet -->
+</head>
+<body>
+  <div class="container">
+    <h1>Web Data Scraper</h1>
+    <p>Enter a website URL or upload a PDF sustainability report to extract data.</p>
+
+    <form id="scraper-form">
+      <div>
+        <label for="url-input">Website URL:</label>
+        <input type="url" id="url-input" name="url">
+      </div>
+      <div>
+        <label for="file-input">Upload PDF Report:</label>
+        <input type="file" id="file-input" name="pdfFile" accept=".pdf">
+      </div>
+      <button type="submit">Extract Data</button>
+    </form>
+
+    <div id="results">
+      <!-- Extracted data will be displayed here -->
+    </div>
+  </div>
+
+  <script src="script.js"></script> <!-- We'll add JavaScript here later -->
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Track</title>
+    <style>
+        /* Basic Reset & Body Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        header nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding-bottom: 5px;
+        }
+
+        header nav a.active, header nav a:hover {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        header .user-actions span {
+            margin-left: 20px;
+            cursor: pointer; /* For icon placeholders */
+        }
+
+        /* Main Content Area Styling */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 30px;
+            background-color: #f8f9fa; /* Lighter background for content area */
+        }
+
+        .content-section {
+            display: none; /* Hidden by default, shown by JS */
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Section Specific Placeholder Styles */
+        .section-title {
+            font-size: 1.5em;
+            color: #343a40;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #343a40;
+            color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+        }
+        footer .footer-links {
+            margin-bottom: 15px;
+        }
+        footer .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer .footer-links a:hover {
+            color: #ffffff;
+        }
+        footer .social-icons span {
+            margin: 0 10px;
+            cursor: pointer; /* For icon placeholders */
+        }
+         .newsletter input[type="email"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            margin-right: -5px;
+        }
+        .newsletter button {
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">CarbonTrack</div>
+        <nav>
+            <a href="#dashboard" id="nav-dashboard" class="nav-link active">Dashboard</a>
+            <a href="#reports" id="nav-reports" class="nav-link">Reports</a>
+            <a href="#analytics" id="nav-analytics" class="nav-link">Analytics</a>
+            <a href="#benchmarks" id="nav-benchmarks" class="nav-link">Benchmarks</a>
+        </nav>
+        <div class="user-actions">
+            <span>🔔</span> <span>👤</span> <span>⚙️</span> </div>
+    </header>
+
+    <main class="main-content">
+        <section id="dashboard" class="content-section active">
+            <h2 class="section-title">Company Carbon Emissions Dashboard</h2>
+            <div class="filter-bar">
+                <select id="company-select-dashboard">
+                    <option value="tesla">Tesla, Inc.</option>
+                    <option value="apple">Apple Inc.</option>
+                </select>
+            </div>
+            <div class="grid-container">
+                <div class="card company-overview">
+                    <h3>Tesla, Inc. Overview</h3>
+                    <p>Sector: Automotive</p>
+                    <p>Industry: Electric Vehicles & Clean Energy</p>
+                    <p>Status: Public</p>
+                    <p>Tesla, Inc. is an American electric vehicle and clean energy company...</p>
+                    <h4>Sustainability Rating: 85%</h4>
+                    <p><small>Based on industry benchmarks</small></p>
+                </div>
+                <div class="card ghg-emissions-data">
+                    <h3>GHG Emissions Data <button onclick="alert('Download CSV clicked')">Download CSV</button></h3>
+                    <table>
+                        <thead>
+                            <tr><th>EMISSIONS TYPE</th><th>2024</th><th>2023</th><th>2022</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Scope 1 (tCO₂e)</td><td>245,890</td><td>267,430</td><td>298,750</td></tr>
+                            <tr><td>Scope 2 (tCO₂e)</td><td>189,650</td><td>215,320</td><td>243,780</td></tr>
+                            <tr><td>Scope 3 (tCO₂e)</td><td>1,245,780</td><td>1,387,650</td><td>1,543,920</td></tr>
+                            <tr><td>Total Emissions (tCO₂e)</td><td>1,681,320</td><td>1,870,400</td><td>2,086,450</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card emissions-breakdown-chart">
+                    <h3>2024 Emissions Breakdown</h3>
+                    <p>[Pie Chart: Scope 1: 14.6%, Scope 2: X%, Scope 3: Y%]</p>
+                </div>
+                <div class="card emissions-trend-targets-chart">
+                    <h3>Emissions Trend & Targets</h3>
+                    <p>[Line Graph showing Scope 1, 2, 3, Total Emissions, and Targets over years]</p>
+                    <button onclick="alert('Show Targets toggled')">Show Targets</button>
+                </div>
+                <div class="card target-analysis">
+                    <h3>Target Analysis</h3>
+                    <p>Base Year (2020): 2.40M tCO₂e</p>
+                    <p>Current (2024): 1.68M tCO₂e</p>
+                    <p>2030 Target: 0.96M tCO₂e</p>
+                </div>
+                 <div class="card industry-benchmarking">
+                    <h3>Industry Benchmarking</h3>
+                    <p>[Comparison radar chart or bars for Emissions Intensity, Reduction Rate, etc.]</p>
+                </div>
+                <div class="card emission-reduction-strategies">
+                    <h3>Emission Reduction Strategies</h3>
+                    <p>Supply Chain Optimization: 45%</p>
+                    <p>Renewable Energy: 68%</p>
+                    <p>Battery Recycling: 72%</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="reports" class="content-section">
+            <h2 class="section-title">Carbon Emissions Reports</h2>
+            <div class="filter-bar">
+                <select><option>All Companies</option></select>
+                <select><option>Current Year (2025)</option></select>
+                <select><option>All Report Types</option></select>
+                <input type="search" placeholder="Search reports...">
+                <button>Generate New Report</button>
+            </div>
+            <h3>Report Templates</h3>
+            <div class="grid-container">
+                <div class="card">Annual Emissions Summary <button>Use Template</button></div>
+                <div class="card">Reduction Progress Report <button>Use Template</button></div>
+                <div class="card">Benchmarking Analysis <button>Use Template</button></div>
+                <div class="card">Custom Report Builder <button>Start Building</button></div>
+            </div>
+            <h3>Recent Reports</h3>
+            <table>
+                <thead><tr><th>REPORT NAME</th><th>COMPANY</th><th>TYPE</th><th>GENERATED DATE</th><th>STATUS</th><th>ACTIONS</th></tr></thead>
+                <tbody>
+                    <tr><td>Q1 2025 Emissions Summary</td><td>Tesla, Inc.</td><td>Quarterly</td><td>May 10, 2025</td><td>Completed</td><td>...</td></tr>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="analytics" class="content-section">
+            <h2 class="section-title">Carbon Emissions Analytics</h2>
+            <div class="filter-bar">
+                <select><option>Tesla, Inc.</option></select>
+                <select><option>2025</option></select>
+                <button>Export Dashboard</button> <button>Share Insights</button>
+            </div>
+            <div class="grid-container">
+                <div class="card">Total Carbon Footprint: 1,254,320 tCO₂e</div>
+                <div class="card">Scope 1: 238,450 tCO₂e</div>
+                <div class="card">Scope 2: 187,620 tCO₂e</div>
+                <div class="card">Scope 3: 828,250 tCO₂e</div>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Emissions Trend Analysis</h3>
+                    <p>[Line chart for monthly/quarterly/yearly trends]</p>
+                </div>
+                <div class="card">
+                    <h3>Emissions Breakdown</h3>
+                    <p>[Donut chart for Scope 1, 2, 3]</p>
+                </div>
+            </div>
+             <div class="card">
+                <h3>Performance Metrics</h3>
+                <p>Carbon Intensity: 24.8 tCO₂e/$M | Energy Efficiency: 87.3 kWh/unit ...</p>
+            </div>
+            <div class="card">
+                <h3>Emissions Comparison Tool</h3>
+                <p>[Inputs for baseline, comparison, benchmark data and a comparison chart]</p>
+                <button>Update Comparison</button>
+            </div>
+            <div class="card">
+                <h3>Predictive Emissions Analysis</h3>
+                <p>[Line chart showing Business as Usual, Moderate, Aggressive Reduction scenarios]</p>
+            </div>
+            <div class="card">
+                <h3>Action Center</h3>
+                <p>High Priority: Supplier Emissions Reduction | Medium Priority: Logistics Route Optimization ...</p>
+            </div>
+        </section>
+
+        <section id="benchmarks" class="content-section">
+            <h2 class="section-title">Industry Benchmarks</h2>
+            <div class="filter-bar">
+                <select><option>All Industries</option></select>
+                <select><option>Global</option></select>
+                <select><option>Emissions Intensity</option></select>
+            </div>
+            <div class="grid-container">
+                 <div class="card">Emissions Intensity: 24.8 tCO₂e/$M</div>
+                 <div class="card">Reduction Rate: 8.2%</div>
+                 <div class="card">Target Ambition: 65%</div>
+                 <div class="card">Renewable Energy: 68.5%</div>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Benchmark Radar</h3>
+                    <p>[Radar chart comparing Your Company, Industry Avg, Best-in-Class]</p>
+                </div>
+                <div class="card">
+                    <h3>Top 5 Performers</h3>
+                    <p>[Bar chart of top 5 performers]</p>
+                </div>
+            </div>
+            <h3>Top 10 Companies by Selected Metric</h3>
+            <table>
+                <thead><tr><th>RANK</th><th>COMPANY</th><th>METRIC VALUE</th><th>CHANGE YOY</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>BestCo Inc.</td><td>95%</td><td>+2.1%</td></tr>
+                    </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Documentation</a> |
+            <a href="#">API Reference</a> |
+            <a href="#">Methodology</a> |
+            <a href="#">Case Studies</a> |
+            <a href="#">About Us</a> |
+            <a href="#">Careers</a> |
+            <a href="#">Blog</a> |
+            <a href="#">Contact</a>
+        </div>
+        <div class="newsletter">
+            <p>Stay Updated: Subscribe to our newsletter for the latest updates on carbon tracking and sustainability.</p>
+            <input type="email" placeholder="Your email">
+            <button>Subscribe</button>
+        </div>
+        <div class="social-icons">
+            <span>LI</span> <span>X</span> <span>FB</span> </div>
+        <p>&copy; <span id="currentYear"></span> CarbonTrack. All rights reserved.</p>
+    </footer>
+
+    <script src="mock_data.js"></script>
+    <script>
+        // Basic SPA Navigation Logic (Conceptual)
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Function to show a section
+            function showSection(sectionId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                const activeSection = document.getElementById(sectionId);
+                const activeLink = document.getElementById('nav-' + sectionId);
+
+                if (activeSection) activeSection.classList.add('active');
+                if (activeLink) activeLink.classList.add('active');
+            }
+
+            // Handle initial load based on hash or default to dashboard
+            const initialSectionId = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+            showSection(initialSectionId);
+
+            // Handle navigation clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    const sectionId = this.getAttribute('href').substring(1);
+                    showSection(sectionId);
+                });
+            });
+
+            // Optional: Handle back/forward buttons if using hash-based routing
+            window.addEventListener('hashchange', function() {
+                const sectionId = window.location.hash.substring(1);
+                showSection(sectionId);
+            });
+            
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // --- DASHBOARD DYNAMIC DATA ---
+            // Populate company selector
+            const companySelect = document.getElementById('company-select-dashboard');
+            companySelect.innerHTML = window.mockCompanies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            // Also populate selectors for Reports and Analytics
+            // Reports
+            const reportsCompanySelect = document.querySelector('#reports .filter-bar select');
+            if (reportsCompanySelect) {
+                reportsCompanySelect.innerHTML = '<option value="all">All Companies</option>' + window.mockCompanies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+            // Analytics
+            const analyticsCompanySelect = document.querySelector('#analytics .filter-bar select');
+            if (analyticsCompanySelect) {
+                analyticsCompanySelect.innerHTML = window.mockCompanies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+            // Benchmarks (first select is industry, second is region, third is metric)
+            // Add a company select for benchmarks (optional, or use for top 10 table)
+
+            // Helper to format numbers with commas
+            function fmt(n) { return n.toLocaleString(); }
+            function fmtM(n) { return (n/1e6).toFixed(2) + 'M'; }
+
+            // Update dashboard cards for selected company
+            function updateDashboard(companyId) {
+                const c = window.mockCompanies.find(x => x.id === companyId) || window.mockCompanies[0];
+                // Overview
+                document.querySelector('.company-overview').innerHTML = `
+                    <h3>${c.name} Overview</h3>
+                    <p>Sector: ${c.sector}</p>
+                    <p>Industry: ${c.industry}</p>
+                    <p>Status: ${c.status}</p>
+                    <p>${c.overview}</p>
+                    <h4>Sustainability Rating: ${c.sustainabilityRating}%</h4>
+                    <p><small>Based on industry benchmarks</small></p>
+                `;
+                // Emissions Table
+                const e = c.emissions;
+                const total = (year) => e[year].scope1 + e[year].scope2 + e[year].scope3;
+                document.querySelector('.ghg-emissions-data').innerHTML = `
+                    <h3>GHG Emissions Data <button onclick="alert('Download CSV clicked')">Download CSV</button></h3>
+                    <table><thead><tr><th>EMISSIONS TYPE</th><th>2024</th><th>2023</th><th>2022</th></tr></thead><tbody>
+                        <tr><td>Scope 1 (tCO₂e)</td><td>${fmt(e[2024].scope1)}</td><td>${fmt(e[2023].scope1)}</td><td>${fmt(e[2022].scope1)}</td></tr>
+                        <tr><td>Scope 2 (tCO₂e)</td><td>${fmt(e[2024].scope2)}</td><td>${fmt(e[2023].scope2)}</td><td>${fmt(e[2022].scope2)}</td></tr>
+                        <tr><td>Scope 3 (tCO₂e)</td><td>${fmt(e[2024].scope3)}</td><td>${fmt(e[2023].scope3)}</td><td>${fmt(e[2022].scope3)}</td></tr>
+                        <tr><td>Total Emissions (tCO₂e)</td><td>${fmt(total(2024))}</td><td>${fmt(total(2023))}</td><td>${fmt(total(2022))}</td></tr>
+                    </tbody></table>
+                `;
+                // Emissions Breakdown (Pie chart placeholder)
+                const t2024 = total(2024);
+                const p1 = ((e[2024].scope1/t2024)*100).toFixed(1), p2 = ((e[2024].scope2/t2024)*100).toFixed(1), p3 = ((e[2024].scope3/t2024)*100).toFixed(1);
+                document.querySelector('.emissions-breakdown-chart').innerHTML = `
+                    <h3>2024 Emissions Breakdown</h3>
+                    <p>[Pie Chart: Scope 1: ${p1}%, Scope 2: ${p2}%, Scope 3: ${p3}%]</p>
+                `;
+                // Emissions Trend & Targets (Line graph placeholder)
+                document.querySelector('.emissions-trend-targets-chart').innerHTML = `
+                    <h3>Emissions Trend & Targets</h3>
+                    <p>[Line Graph showing Scope 1, 2, 3, Total Emissions, and Targets over years]</p>
+                    <button onclick="alert('Show Targets toggled')">Show Targets</button>
+                `;
+                // Target Analysis
+                document.querySelector('.target-analysis').innerHTML = `
+                    <h3>Target Analysis</h3>
+                    <p>Base Year (${c.targets.baseYear}): ${fmtM(c.targets.baseEmissions)} tCO₂e</p>
+                    <p>Current (2024): ${fmtM(c.targets.current)} tCO₂e</p>
+                    <p>2030 Target: ${fmtM(c.targets.target2030)} tCO₂e</p>
+                `;
+                // Industry Benchmarking (placeholder)
+                document.querySelector('.industry-benchmarking').innerHTML = `
+                    <h3>Industry Benchmarking</h3>
+                    <p>[Comparison radar chart or bars for Emissions Intensity, Reduction Rate, etc.]</p>
+                `;
+                // Emission Reduction Strategies
+                document.querySelector('.emission-reduction-strategies').innerHTML = `
+                    <h3>Emission Reduction Strategies</h3>
+                    ${c.strategies.map(s => `<p>${s.name}: ${s.percent}%</p>`).join('')}
+                `;
+            }
+            // Initial dashboard load
+            updateDashboard(companySelect.value);
+            companySelect.addEventListener('change', e => updateDashboard(e.target.value));
+
+            // --- REPORTS DYNAMIC DATA ---
+            if (reportsCompanySelect) {
+                reportsCompanySelect.addEventListener('change', function() {
+                    // Optionally filter reports table/cards by company
+                    // For now, just update the first row's company name as a demo
+                    const val = this.value;
+                    const name = val === 'all' ? 'All Companies' : (window.mockCompanies.find(c => c.id === val)?.name || '');
+                    const cell = document.querySelector('#reports table tbody tr td:nth-child(2)');
+                    if (cell) cell.textContent = name;
+                });
+            }
+
+            // --- ANALYTICS DYNAMIC DATA ---
+            if (analyticsCompanySelect) {
+                function updateAnalytics(companyId) {
+                    const c = window.mockCompanies.find(x => x.id === companyId) || window.mockCompanies[0];
+                    // Update the main metric cards
+                    const gridCards = document.querySelectorAll('#analytics .grid-container .card');
+                    if (gridCards.length >= 4) {
+                        const e = c.emissions[2024];
+                        const total = e.scope1 + e.scope2 + e.scope3;
+                        gridCards[0].textContent = `Total Carbon Footprint: ${fmt(total)} tCO₂e`;
+                        gridCards[1].textContent = `Scope 1: ${fmt(e.scope1)} tCO₂e`;
+                        gridCards[2].textContent = `Scope 2: ${fmt(e.scope2)} tCO₂e`;
+                        gridCards[3].textContent = `Scope 3: ${fmt(e.scope3)} tCO₂e`;
+                    }
+                    // Optionally update other cards with more analytics
+                }
+                updateAnalytics(analyticsCompanySelect.value);
+                analyticsCompanySelect.addEventListener('change', e => updateAnalytics(e.target.value));
+            }
+
+            // --- BENCHMARKS DYNAMIC DATA ---
+            // Top 10 Companies by selected metric (default: sustainabilityRating)
+            function updateBenchmarks(metric = 'sustainabilityRating') {
+                // Sort companies by metric descending
+                const sorted = [...window.mockCompanies].sort((a, b) => (b.kpis[metric] ?? b[metric]) - (a.kpis[metric] ?? a[metric]));
+                const tbody = document.querySelector('#benchmarks table tbody');
+                if (tbody) {
+                    tbody.innerHTML = sorted.slice(0, 10).map((c, i) => {
+                        const value = c.kpis[metric] ?? c[metric];
+                        const change = (Math.random() * 4 - 2).toFixed(1); // Fake YoY change
+                        return `<tr><td>${i+1}</td><td>${c.name}</td><td>${value}%</td><td>${change > 0 ? '+' : ''}${change}%</td></tr>`;
+                    }).join('');
+                }
+                // Update the 4 metric cards
+                const cards = document.querySelectorAll('#benchmarks .grid-container .card');
+                if (cards.length >= 4) {
+                    const top = sorted[0];
+                    cards[0].textContent = `Emissions Intensity: ${top.kpis.emissionsIntensity} tCO₂e/$M`;
+                    cards[1].textContent = `Reduction Rate: ${top.kpis.reductionRate}%`;
+                    cards[2].textContent = `Target Ambition: ${top.kpis.targetAmbition}%`;
+                    cards[3].textContent = `Renewable Energy: ${top.kpis.renewableEnergy}%`;
+                }
+            }
+            updateBenchmarks();
+            // Optionally, add event listeners to metric/industry selectors to updateBenchmarks(metric)
+        });
+    </script>
+
+</body>
+</html>

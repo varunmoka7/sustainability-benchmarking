@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import plotly.express as px
+import plotly.graph_objects as go
+from benchmarking_module import render_benchmarking_metrics, plot_benchmarking_chart
 
 DATABASE_NAME = 'corporate_emissions.sqlite'
 
@@ -189,7 +191,7 @@ except Exception as e:
 
 # --- Main Content Area (Tabs) ---
 if not df_all_data.empty:
-    tab1, tab2, tab3 = st.tabs(["📊 Overview", "🏢 Company Deep Dive", "🏭 Sector/Industry Analysis"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Overview", "🏢 Company Deep Dive", "🏭 Sector/Industry Analysis", "📈 Benchmarking"])
 
     with tab1:
         st.header("Emissions Overview (All Data)")
@@ -347,6 +349,104 @@ if not df_all_data.empty:
                 st.write("No data for average sector comparison chart.")
         else:
             st.warning("No data loaded for sector/industry analysis.")
+            
+    with tab4:
+        st.header("Sustainability Benchmarking")
+        
+        # Company selection for benchmarking
+        all_company_names_bench = ["Select a company..."] + sorted(df_all_data['company_name'].unique().tolist())
+        selected_company_for_bench = st.selectbox("Select Company for Benchmarking", all_company_names_bench, key="company_benchmark_select")
+        
+        if selected_company_for_bench != "Select a company...":
+            # Get company data
+            df_company_bench = df_all_data[df_all_data['company_name'] == selected_company_for_bench].copy()
+            
+            if not df_company_bench.empty:
+                # Get company ID for the benchmarking module
+                company_bench_query = f"""
+                SELECT company_id FROM Companies 
+                WHERE company_name = '{selected_company_for_bench}'
+                """
+                company_bench_id_df = load_data(company_bench_query)
+                
+                if not company_bench_id_df.empty:
+                    company_bench_id = company_bench_id_df['company_id'].iloc[0]
+                    
+                    # Get available reporting periods for this company
+                    company_periods = sorted(df_company_bench['reporting_period'].astype(str).unique(), reverse=True)
+                    
+                    if company_periods:
+                        selected_period = st.selectbox(
+                            "Select Reporting Period", 
+                            company_periods,
+                            key="benchmark_period_select"
+                        )
+                        
+                        # Display benchmarking metrics
+                        render_benchmarking_metrics(company_bench_id, selected_company_for_bench, selected_period)
+                        
+                        # Historical comparison (if multiple periods available)
+                        if len(company_periods) > 1:
+                            st.subheader("Historical Benchmark Comparison")
+                            scope_for_chart = st.selectbox(
+                                "Select Scope for Trend Analysis",
+                                ["Scope 1", "Scope 2", "Scope 3 Total"],
+                                key="benchmark_scope_select"
+                            )
+                            
+                            benchmark_chart = plot_benchmarking_chart(
+                                company_bench_id, 
+                                selected_company_for_bench, 
+                                company_periods[:5],  # Use up to 5 most recent periods
+                                scope_for_chart
+                            )
+                            
+                            if benchmark_chart:
+                                st.plotly_chart(benchmark_chart, use_container_width=True)
+                            else:
+                                st.info("Not enough benchmark data available for historical comparison.")
+                    else:
+                        st.warning(f"No reporting periods found for {selected_company_for_bench}")
+                else:
+                    st.warning(f"Could not find company ID for {selected_company_for_bench}")
+            else:
+                st.warning(f"No data available for {selected_company_for_bench}")
+        else:
+            st.info("Select a company from the dropdown to view benchmarking metrics.")
+            
+            # Industry benchmark overview
+            st.subheader("Industry Benchmark Overview")
+            industry_bench_query = """
+            SELECT sector, industry, year, scope_type, 
+                   COUNT(*) as company_count, 
+                   AVG(median_value) as avg_median
+            FROM IndustryBenchmarks
+            WHERE scope_type IN ('Scope 1', 'Scope 2', 'Scope 3 Total')
+            GROUP BY sector, industry, year, scope_type
+            ORDER BY sector, industry, year DESC, scope_type
+            """
+            
+            try:
+                industry_bench_df = load_data(industry_bench_query)
+                if not industry_bench_df.empty:
+                    # Format for display
+                    industry_bench_df['avg_median'] = industry_bench_df['avg_median'].map('{:,.0f}'.format)
+                    st.dataframe(
+                        industry_bench_df.rename(columns={
+                            'sector': 'Sector',
+                            'industry': 'Industry',
+                            'year': 'Year',
+                            'scope_type': 'Scope Type',
+                            'company_count': 'Companies',
+                            'avg_median': 'Avg Median (mtCO2e)'
+                        }),
+                        use_container_width=True
+                    )
+                else:
+                    st.info("No industry benchmark data available. Run the benchmarking setup script first.")
+            except Exception as e:
+                st.error(f"Error loading industry benchmarks: {e}")
+                st.info("Industry benchmarks not available. Run the setup_benchmarking.py script to generate them.")
 else:
     st.error("Failed to load initial data. Dashboard cannot be displayed.")
 

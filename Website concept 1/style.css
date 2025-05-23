@@ -1,0 +1,263 @@
+/* Color Palette */
+:root {
+    --primary-blue: #1976D2;
+    --green-metric: #4CAF50;
+    --amber-warning: #FFC107;
+    --red-alert: #F4436;
+    --dark-charcoal: #333333;
+    --medium-gray: #555555;
+    --light-gray: #dddddd;
+    --white: #ffffff;
+    --light-grey-background: #F8F8F8;
+}
+
+/* Typography */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Modern sans-serif stack */
+  background-color: var(--light-grey-background);
+  color: var(--medium-gray);
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  color: var(--dark-charcoal);
+  font-weight: 600; /* As specified for H1, applying to others for now */
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2, h3 {
+  font-size: 18px;
+}
+
+
+header {
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle drop shadow */
+    display: flex;
+    align-items: center;
+    padding: 0 20px; /* Add some padding */
+    justify-content: space-between; /* Space out logo and icons */
+    height: 60px; /* Approximate height from your description */
+    background-color: var(--white);
+    position: fixed; /* Keep header at the top */
+    top: 0;
+    left: 0;
+    z-index: 100; /* Ensure header is above other content */
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.header-icons .icon {
+  font-size: 26px;
+  color: var(--medium-gray);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.header-icons .icon:hover {
+  color: var(--primary-blue);
+}
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  letter-spacing: 1px;
+}
+
+.container {
+    display: flex;
+    margin-top: 60px; /* Add margin to the top to prevent content from being hidden by the fixed header */
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--dark-charcoal);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  border-right: 1px solid #222;
+}
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 32px 16px 24px;
+  font-size: 16px;
+  color: var(--white);
+  opacity: 0.85;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  margin-bottom: 2px;
+}
+.sidebar-item .material-icons {
+  margin-right: 16px;
+  font-size: 22px;
+}
+.sidebar-item.active, .sidebar-item:hover {
+  background: rgba(255,255,255,0.07);
+  border-left: 4px solid var(--primary-blue);
+  opacity: 1;
+}
+
+.main-content {
+    flex-grow: 1; /* Allow main content to take up remaining space */
+    padding: 20px;
+    margin-left: 240px; /* Add margin to the left to prevent content from being hidden by the fixed sidebar */
+}
+
+/* Dashboard Styles */
+.kpi-summary {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  min-width: 200px;
+  max-width: 260px;
+  height: 110px;
+  padding: 18px 20px;
+  border-left: 6px solid var(--light-gray);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.kpi-card.kpi-blue { border-left-color: var(--primary-blue); }
+.kpi-card.kpi-green { border-left-color: var(--green-metric); }
+.kpi-card.kpi-amber { border-left-color: var(--amber-warning); }
+.kpi-card.kpi-red { border-left-color: var(--red-alert); }
+.kpi-label {
+  font-size: 15px;
+  color: var(--medium-gray);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--dark-charcoal);
+}
+.kpi-trend {
+  font-size: 14px;
+  color: var(--amber-warning);
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+}
+.kpi-trend.up {
+  color: var(--green-metric);
+}
+
+.kpi-card:hover, .action-icon:hover {
+    transform: translateY(-2px); /* Lift card slightly */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* Enhance shadow on hover */
+}
+
+/* Charts Section Styles */
+.charts-section {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.line-chart-container, .donut-chart-container {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 24px 20px 20px 20px;
+  border: 1px solid var(--light-gray);
+  flex: 1;
+  min-width: 0;
+}
+.line-chart-container { flex: 2; }
+.donut-chart-container { flex: 1; }
+.chart-placeholder {
+  width: 100%;
+  height: 180px;
+  background: repeating-linear-gradient(135deg, #f0f0f0, #f0f0f0 10px, #e0e0e0 10px, #e0e0e0 20px);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--medium-gray);
+  font-size: 18px;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.recent-activity-section {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 24px 20px 20px 20px;
+  border: 1px solid var(--light-gray);
+  margin-top: 0;
+}
+.recent-activity-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: var(--dark-charcoal);
+}
+.recent-activity-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--light-gray);
+}
+th {
+  background: var(--light-grey-background);
+  font-weight: 600;
+  color: var (--dark-charcoal);
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: #f5f7fa;
+}
+.action-icon {
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--primary-blue);
+  vertical-align: middle;
+  transition: color 0.15s;
+}
+.action-icon:last-child {
+  margin-right: 0;
+}
+.action-icon:hover {
+  color: var(--amber-warning);
+}
+
+/* Landing Page Styles */
+.landing-content {
+  max-width: 800px; /* Limit width for readability */
+  margin: 40px auto; /* Center content and add vertical margin */
+  padding: 20px;
+  background-color: var(--white);
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+

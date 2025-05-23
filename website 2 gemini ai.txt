@@ -1,0 +1,749 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonTrack - Your Carbon Management Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom font - Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Light grey background for the page */
+            scroll-behavior: smooth;
+        }
+        /* Helper class for card styling */
+        .dashboard-card {
+            background-color: white;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem; /* 24px */
+        }
+        /* Custom scrollbar for better aesthetics (optional) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Ensure charts are responsive */
+        .chart-container {
+            position: relative;
+            height: 300px; /* Default height, can be adjusted */
+            width: 100%;
+        }
+        /* Hide sections by default */
+        .page-section {
+            display: none;
+        }
+        /* Active section display */
+        .page-section.active {
+            display: block;
+        }
+
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px; /* Smaller height for mobile */
+            }
+        }
+        /* Additional styling for landing page */
+        .hero-section {
+            background: linear-gradient(to right, rgba(22, 163, 74, 0.8), rgba(34, 197, 94, 0.7)), url('https://placehold.co/1920x1080/333333/FFFFFF?text=Sustainable+Future');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-green-600" data-page="landing">CarbonTrack</a>
+                </div>
+                <nav class="hidden md:flex space-x-4">
+                    <a href="#" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="dashboard">Dashboard</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="reports">Reports</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="analytics">Analytics</a>
+                    <a href="#" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="benchmarks">Benchmarks</a>
+                </nav>
+                <div class="flex items-center space-x-3">
+                    <button class="p-2 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                    </button>
+                    <button class="p-2 rounded-full hover:bg-gray-200">
+                         <img src="https://placehold.co/32x32/E0E0E0/757575?text=User" alt="User Avatar" class="w-8 h-8 rounded-full">
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="dashboard">Dashboard</a>
+                <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="reports">Reports</a>
+                <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="analytics">Analytics</a>
+                <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-200 hover:text-gray-900" data-page="benchmarks">Benchmarks</a>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="main-content">
+
+
+        <section id="landing" class="page-section active">
+            <div class="hero-section text-white py-20 sm:py-32">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">Navigate Your Path to Net Zero</h1>
+                    <p class="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">CarbonTrack empowers your organization to accurately measure, manage, and reduce its carbon footprint with comprehensive data, insightful analytics, and actionable strategies.</p>
+                    <button class="bg-white text-green-600 font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-gray-100 transition duration-300 nav-link" data-page="dashboard">Get Started</button>
+                </div>
+            </div>
+
+
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Key Features</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                            <div class="text-green-500 mb-4">
+                                <i class="fas fa-tachometer-alt fa-3x"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Comprehensive Dashboard</h3>
+                            <p class="text-gray-600 text-sm">Visualize your emissions data, track progress against targets, and gain at-a-glance insights into your company's carbon performance.</p>
+                        </div>
+                        <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                            <div class="text-green-500 mb-4">
+                                <i class="fas fa-file-alt fa-3x"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Detailed Reporting</h3>
+                            <p class="text-gray-600 text-sm">Generate customizable reports for internal stakeholders, compliance, and sustainability disclosures with ease.</p>
+                        </div>
+                        <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                            <div class="text-green-500 mb-4">
+                                <i class="fas fa-chart-line fa-3x"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Advanced Analytics</h3>
+                            <p class="text-gray-600 text-sm">Leverage powerful analytics to identify emission hotspots, model reduction scenarios, and optimize your sustainability strategy.</p>
+                        </div>
+                        <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+                            <div class="text-green-500 mb-4">
+                                <i class="fas fa-balance-scale fa-3x"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Industry Benchmarking</h3>
+                            <p class="text-gray-600 text-sm">Compare your performance against industry peers and best-in-class standards to identify areas for improvement.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="py-16 bg-gray-50">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Ready to Take Control of Your Carbon Emissions?</h2>
+                    <p class="text-lg text-gray-600 mb-8 max-w-xl mx-auto">Join leading companies in building a sustainable future. Explore CarbonTrack today.</p>
+                    <button class="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-green-700 transition duration-300 nav-link" data-page="dashboard">Request a Demo</button>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="dashboard" class="page-section">
+            <main class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+                <h1 class="text-2xl font-semibold text-gray-800">Company Carbon Emissions Dashboard</h1>
+                <div class="relative">
+                    <input type="text" placeholder="Search Apple Inc." class="w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                </div>
+                <section class="dashboard-card">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <h2 class="text-3xl font-bold text-gray-900 mb-2">Tesla, Inc.</h2>
+                            <div class="flex flex-wrap gap-x-8 gap-y-4 mb-4 text-sm">
+                                <div><p class="text-gray-500">Sector</p><p class="font-medium text-gray-700">Automotive</p></div>
+                                <div><p class="text-gray-500">Industry</p><p class="font-medium text-gray-700">Electric Vehicles & Clean Energy</p></div>
+                                <div><p class="text-gray-500">Status</p><p class="font-medium text-gray-700">Public</p></div>
+                                <div><p class="text-gray-500">GHG Data</p><span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Available</span></div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-1">Company Overview</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Tesla, Inc. is an American electric vehicle and clean energy company...</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center bg-gray-50 p-6 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-1">Sustainability Rating</p><p class="text-5xl font-bold text-green-600 mb-1">85%</p>
+                            <p class="text-xs text-gray-500">Based on industry benchmarks</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 dashboard-card">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800">GHG Emissions Data</h3>
+                            <button class="mt-2 sm:mt-0 px-4 py-2 text-sm font-medium text-green-600 border border-green-600 rounded-lg hover:bg-green-50 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>Download CSV
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Emissions Type</th><th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">2024</th><th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">2023</th><th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">2022</th><th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">2021</th><th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">2020</th></tr></thead>
+                                <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                                    <tr><td class="px-4 py-3 whitespace-nowrap">Scope 1 (tCO₂e)</td><td class="px-4 py-3 text-right whitespace-nowrap">245,890</td><td class="px-4 py-3 text-right whitespace-nowrap">267,430</td><td class="px-4 py-3 text-right whitespace-nowrap">298,750</td><td class="px-4 py-3 text-right whitespace-nowrap">312,460</td><td class="px-4 py-3 text-right whitespace-nowrap">325,780</td></tr>
+                                    <tr><td class="px-4 py-3 whitespace-nowrap">Scope 2 (tCO₂e)</td><td class="px-4 py-3 text-right whitespace-nowrap">189,650</td><td class="px-4 py-3 text-right whitespace-nowrap">215,320</td><td class="px-4 py-3 text-right whitespace-nowrap">243,780</td><td class="px-4 py-3 text-right whitespace-nowrap">268,540</td><td class="px-4 py-3 text-right whitespace-nowrap">285,670</td></tr>
+                                    <tr><td class="px-4 py-3 whitespace-nowrap">Scope 3 (tCO₂e)</td><td class="px-4 py-3 text-right whitespace-nowrap">1,245,780</td><td class="px-4 py-3 text-right whitespace-nowrap">1,387,650</td><td class="px-4 py-3 text-right whitespace-nowrap">1,543,920</td><td class="px-4 py-3 text-right whitespace-nowrap">1,678,340</td><td class="px-4 py-3 text-right whitespace-nowrap">1,789,560</td></tr>
+                                    <tr class="font-semibold bg-gray-50"><td class="px-4 py-3 whitespace-nowrap">Total Emissions (tCO₂e)</td><td class="px-4 py-3 text-right whitespace-nowrap">1,681,320</td><td class="px-4 py-3 text-right whitespace-nowrap">1,870,400</td><td class="px-4 py-3 text-right whitespace-nowrap">2,086,450</td><td class="px-4 py-3 text-right whitespace-nowrap">2,259,340</td><td class="px-4 py-3 text-right whitespace-nowrap">2,401,010</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">2024 Emissions Breakdown</h3>
+                        <div class="chart-container" style="height: 250px;"><canvas id="emissionsBreakdownChart"></canvas></div>
+                        <div class="mt-4 text-sm text-gray-600"><p>Scope 1 (Direct): <span class="font-semibold">14.6%</span></p></div>
+                    </div>
+                </section>
+                <section class="dashboard-card">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Emissions Trend & Targets</h3>
+                        <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+                            <label for="showTargetsToggle" class="flex items-center cursor-pointer text-sm"><span class="mr-2 text-gray-700">Show Targets</span><div class="relative"><input type="checkbox" id="showTargetsToggle" class="sr-only peer" checked><div class="w-10 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors"></div><div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-full"></div></div></label>
+                            <select class="p-2 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500"><option>All Scopes</option><option>Scope 1</option><option>Scope 2</option><option>Scope 3</option></select>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 350px;"><canvas id="emissionsTrendChart"></canvas></div>
+                </section>
+                <section class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-2 dashboard-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Target Analysis</h3>
+                        <div class="chart-container" style="height: 280px;"><canvas id="targetAnalysisChart"></canvas></div>
+                        <div class="mt-6 grid grid-cols-3 gap-2 text-center text-sm">
+                            <div><p class="text-gray-500">Base Year (2020)</p><p class="font-bold text-lg text-gray-800">2.40M tCO₂e</p></div>
+                            <div><p class="text-gray-500">Current (2024)</p><p class="font-bold text-lg text-gray-800">1.68M tCO₂e</p></div>
+                            <div><p class="text-gray-500">2030 Target</p><p class="font-bold text-lg text-green-600">0.96M tCO₂e</p></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 dashboard-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Industry Benchmarking</h3>
+                        <div class="chart-container" style="height: 280px;"><canvas id="industryBenchmarkingChart"></canvas></div>
+                        <p class="text-xs text-gray-500 mt-4 text-center">Compare Tesla's performance against top 50 sustainability leaders...</p>
+                        <div class="mt-4 flex flex-wrap justify-center gap-2">
+                            <button class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200">Emissions Intensity</button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200">Reduction Rate</button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200">Target Ambition</button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-200 rounded-full hover:bg-gray-300 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Add Metric</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="dashboard-card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Emission Reduction Strategies</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-5 rounded-lg shadow">
+                            <div class="flex items-center text-green-600 mb-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg><h4 class="text-md font-semibold text-gray-700">Renewable Energy</h4></div>
+                            <p class="text-xs text-gray-600 mb-3 leading-relaxed">Transition to 100% renewable energy...</p><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-green-500 h-2.5 rounded-full" style="width: 68%"></div></div><p class="text-right text-xs font-medium text-green-600 mt-1">68%</p>
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-lg shadow">
+                            <div class="flex items-center text-blue-600 mb-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5H9m9-4.5h-1.125c-.621 0-1.125.504-1.125 1.125V18.75m-17.25 0h1.125c.621 0 1.125.504 1.125 1.125V21m12-2.25V15m0c0 .597.237 1.17.659 1.591l.204.204a.5.5 0 00.707 0l3.25-3.25a.5.5 0 000-.707l-.204-.204A2.25 2.25 0 0015 12.75V12.75m-3.75 6H3.375A1.125 1.125 0 012.25 17.625V6.375A1.125 1.125 0 013.375 5.25H20.625A1.125 1.125 0 0121.75 6.375v11.25A1.125 1.125 0 0120.625 18.75H11.25m-3.75 0h-1.5m0 0V15m0 3.75V15m0 0H6" /></svg><h4 class="text-md font-semibold text-gray-700">Supply Chain Optimization</h4></div>
+                            <p class="text-xs text-gray-600 mb-3 leading-relaxed">Reduce supplier emissions by 30%...</p><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 45%"></div></div><p class="text-right text-xs font-medium text-blue-600 mt-1">45%</p>
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-lg shadow">
+                            <div class="flex items-center text-indigo-600 mb-2"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg><h4 class="text-md font-semibold text-gray-700">Battery Recycling</h4></div>
+                            <p class="text-xs text-gray-600 mb-3 leading-relaxed">Implement closed-loop battery recycling...</p><div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-indigo-500 h-2.5 rounded-full" style="width: 82%"></div></div><p class="text-right text-xs font-medium text-indigo-600 mt-1">82%</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </section>
+
+
+        <section id="reports" class="page-section">
+            <main class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <h1 class="text-3xl font-semibold text-gray-800">Carbon Emission Reports</h1>
+                    <button class="mt-4 sm:mt-0 bg-green-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300 flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Generate New Report
+                    </button>
+                </div>
+
+
+                <div class="dashboard-card p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
+                        <div>
+                            <label for="reportSearch" class="block text-sm font-medium text-gray-700 mb-1">Search Reports</label>
+                            <input type="text" id="reportSearch" placeholder="E.g., Q3 Compliance Report" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label for="reportType" class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                            <select id="reportType" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
+                                <option>All Types</option>
+                                <option>Compliance</option>
+                                <option>Sustainability</option>
+                                <option>Internal Review</option>
+                                <option>Investor Relations</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="reportDateRange" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                            <input type="date" id="reportDateRange" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300">Apply Filters</button>
+                    </div>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Saved Reports</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Report Name</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date Created</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Annual Sustainability Report 2023</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">Sustainability</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2024-01-15</td>
+                                    <td class="px-4 py-3 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Completed</span></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> View</button>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-download"></i> Download</button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i> Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Q4 Emissions Compliance</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">Compliance</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2023-10-05</td>
+                                    <td class="px-4 py-3 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Completed</span></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> View</button>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-download"></i> Download</button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i> Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Scope 3 Deep Dive Analysis</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">Internal Review</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">2024-05-10</td>
+                                    <td class="px-4 py-3 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold text-yellow-700 bg-yellow-100 rounded-full">Draft</span></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-center space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i> Edit</button>
+                                        <button class="text-green-600 hover:text-green-800 disabled:opacity-50" disabled><i class="fas fa-download"></i> Download</button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i> Delete</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                        </table>
+                    </div>
+                     <div class="mt-4 text-center">
+                        <button class="text-sm text-green-600 hover:underline">Load More Reports</button>
+                    </div>
+                </div>
+
+
+                <div class="dashboard-card mt-8">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Report Templates</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-file-invoice text-blue-500 fa-2x mr-3"></i>
+                                <h3 class="font-semibold text-gray-700">Standard GHG Protocol Report</h3>
+                            </div>
+                            <p class="text-xs text-gray-600">Comprehensive report aligned with GHG Protocol standards, covering Scope 1, 2, and 3.</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-leaf text-green-500 fa-2x mr-3"></i>
+                                <h3 class="font-semibold text-gray-700">TCFD Alignment Report</h3>
+                            </div>
+                            <p class="text-xs text-gray-600">Report focused on climate-related financial disclosures as per TCFD recommendations.</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-chart-pie text-purple-500 fa-2x mr-3"></i>
+                                <h3 class="font-semibold text-gray-700">Executive Summary Report</h3>
+                            </div>
+                            <p class="text-xs text-gray-600">High-level overview of emissions performance and key trends for executive review.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+
+        <section id="analytics" class="page-section">
+            <main class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-6">Carbon Analytics & Insights</h1>
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="dashboard-card p-6">
+                        <div class="flex items-center text-blue-500 mb-3">
+                            <i class="fas fa-fire fa-2x mr-3"></i>
+                            <h2 class="text-xl font-semibold">Emission Hotspots</h2>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Identify the largest sources of emissions across your operations and value chain.</p>
+                        <a href="#" class="text-sm text-green-600 hover:underline font-medium">Explore Hotspot Analysis &rarr;</a>
+                    </div>
+                    <div class="dashboard-card p-6">
+                        <div class="flex items-center text-purple-500 mb-3">
+                            <i class="fas fa-cogs fa-2x mr-3"></i>
+                            <h2 class="text-xl font-semibold">Scenario Modeling</h2>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Model the impact of different reduction initiatives on your future emissions trajectory.</p>
+                        <a href="#" class="text-sm text-green-600 hover:underline font-medium">Run Scenarios &rarr;</a>
+                    </div>
+                    <div class="dashboard-card p-6">
+                        <div class="flex items-center text-yellow-500 mb-3">
+                            <i class="fas fa-bullseye fa-2x mr-3"></i>
+                            <h2 class="text-xl font-semibold">Target Tracking</h2>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Monitor progress towards your emission reduction targets and identify any deviations.</p>
+                        <a href="#" class="text-sm text-green-600 hover:underline font-medium">View Target Progress &rarr;</a>
+                    </div>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-700">Emissions by Business Unit (YoY)</h2>
+                        <select class="p-2 border border-gray-300 rounded-md text-sm">
+                            <option>Last 12 Months</option>
+                            <option>Last 24 Months</option>
+                            <option>Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="analyticsBusinessUnitChart"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">This chart shows a breakdown of emissions by different business units, comparing current year to previous year.</p>
+                </div>
+
+
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="dashboard-card p-5">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Supply Chain Emissions Analysis</h3>
+                        <p class="text-sm text-gray-600 mb-3">Drill down into Scope 3 emissions from your supply chain. Identify key contributing suppliers and categories.</p>
+                        <button class="text-sm bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">Explore Supply Chain Data</button>
+                    </div>
+                    <div class="dashboard-card p-5">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Product Carbon Footprint</h3>
+                        <p class="text-sm text-gray-600 mb-3">Analyze the carbon footprint of individual products or services across their lifecycle.</p>
+                        <button class="text-sm bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300">Analyze Product Footprints</button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+
+        <section id="benchmarks" class="page-section">
+            <main class="container mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-6">Industry & Peer Benchmarking</h1>
+
+
+                <div class="dashboard-card p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-3">Understand Your Performance in Context</h2>
+                    <p class="text-sm text-gray-600 mb-4">Compare your company's carbon emissions intensity, reduction rates, and sustainability practices against industry averages, sector leaders, and custom peer groups. Identify areas of strength and opportunities for improvement.</p>
+                    <div class="flex space-x-4">
+                        <button class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700">View Industry Averages</button>
+                        <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600">Set Up Peer Group</button>
+                    </div>
+                </div>
+
+
+                <div class="dashboard-card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Performance vs. Automotive Sector</h2>
+                     <div class="chart-container" style="height: 350px;">
+                        <canvas id="benchmarkingRadarChartDetail"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center">Comparison across key sustainability metrics: Emissions Intensity, Scope 3 Management, Renewable Energy Adoption, Target Ambition, and Reduction Rate.</p>
+                </div>
+
+
+                <div class="dashboard-card mt-8">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Detailed Metric Comparison</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                                    <th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">Your Company</th>
+                                    <th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">Industry Average</th>
+                                    <th class="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">Best in Class</th>
+                                    <th class="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">Performance Gap</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Emissions Intensity (tCO₂e / $M Revenue)</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">0.55</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">0.72</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">0.35</td>
+                                    <td class="px-4 py-3 text-center whitespace-nowrap"><span class="text-green-600 font-semibold">+23.6% (Better)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Renewable Energy Usage (%)</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">68%</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">55%</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">95%</td>
+                                    <td class="px-4 py-3 text-center whitespace-nowrap"><span class="text-yellow-600">27% (vs Best)</span></td>
+                                </tr>
+                                 <tr>
+                                    <td class="px-4 py-3 whitespace-nowrap font-medium">Annual Reduction Rate (Total Emissions)</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">5.2%</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">4.1%</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap">7.5%</td>
+                                    <td class="px-4 py-3 text-center whitespace-nowrap"><span class="text-green-600 font-semibold">+1.1% (vs Avg)</span></td>
+                                </tr>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+
+    </div> <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p class="text-sm text-gray-500">&copy; 2025 CarbonTrack. All rights reserved.</p>
+            <div class="mt-2 space-x-4">
+                <a href="#" class="text-xs text-gray-500 hover:text-gray-700">Privacy Policy</a>
+                <a href="#" class="text-xs text-gray-500 hover:text-gray-700">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Page switching logic
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageSections = document.querySelectorAll('.page-section');
+        const mainContent = document.getElementById('main-content');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+
+        // Store chart instances to re-render if necessary
+        let charts = {};
+
+
+        function showPage(pageId) {
+            pageSections.forEach(section => {
+                if (section.id === pageId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+            // Scroll to top of the content area
+            mainContent.scrollTop = 0; // For overflow content
+            window.scrollTo(0,0); // For main window scroll
+
+
+            // Special handling for initializing charts when a page becomes active
+            if (pageId === 'dashboard' && !charts.emissionsBreakdownChart) initializeDashboardCharts();
+            if (pageId === 'analytics' && !charts.analyticsBusinessUnitChart) initializeAnalyticsCharts();
+            if (pageId === 'benchmarks' && !charts.benchmarkingRadarChartDetail) initializeBenchmarksCharts();
+
+
+            // Highlight active nav link
+            navLinks.forEach(link => {
+                if (link.dataset.page === pageId) {
+                    link.classList.add('text-green-600', 'font-semibold'); // Example active style
+                    link.classList.remove('text-gray-700');
+                } else {
+                    link.classList.remove('text-green-600', 'font-semibold');
+                    link.classList.add('text-gray-700');
+                }
+            });
+            // Close mobile menu if open
+            mobileMenu.classList.add('hidden');
+        }
+
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const pageId = link.dataset.page;
+                showPage(pageId);
+            });
+        });
+        
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+
+        // Initial page load - show landing page
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('landing'); // Show landing page by default
+            // Dashboard charts are initialized when dashboard page is shown
+        });
+
+
+        // Chart.js Initializations
+        function initializeDashboardCharts() {
+            // 1. Emissions Breakdown Pie Chart
+            const emissionsCtx = document.getElementById('emissionsBreakdownChart')?.getContext('2d');
+            if (emissionsCtx && !charts.emissionsBreakdownChart) {
+                charts.emissionsBreakdownChart = new Chart(emissionsCtx, { /* ... pie chart config from previous ... */
+                    type: 'pie',
+                    data: {
+                        labels: ['Scope 1', 'Scope 2', 'Scope 3'],
+                        datasets: [{
+                            label: 'Emissions Breakdown 2024',
+                            data: [14.62, (189650 / 1681320 * 100), (1245780 / 1681320 * 100)],
+                            backgroundColor: ['rgba(54, 162, 235, 0.8)','rgba(75, 192, 192, 0.8)','rgba(255, 206, 86, 0.8)'],
+                            borderColor: ['rgba(54, 162, 235, 1)','rgba(75, 192, 192, 1)','rgba(255, 206, 86, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 15, font: { size: 10 }}}, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed.toFixed(2)}%`}}}}
+                });
+            }
+
+
+            // 2. Emissions Trend Line Chart
+            const trendCtx = document.getElementById('emissionsTrendChart')?.getContext('2d');
+            if (trendCtx && !charts.emissionsTrendChart) {
+                charts.emissionsTrendChart = new Chart(trendCtx, { /* ... line chart config from previous ... */
+                    type: 'line',
+                    data: {
+                        labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+                        datasets: [
+                            { label: 'Scope 1', data: [325780, 312460, 298750, 267430, 245890, null, null, null, null, null, null], borderColor: 'rgba(54, 162, 235, 1)', backgroundColor: 'rgba(54, 162, 235, 0.1)', tension: 0.1, pointRadius: 3, pointBackgroundColor: 'rgba(54, 162, 235, 1)'},
+                            { label: 'Scope 2', data: [285670, 268540, 243780, 215320, 189650, null, null, null, null, null, null], borderColor: 'rgba(75, 192, 192, 1)', backgroundColor: 'rgba(75, 192, 192, 0.1)', tension: 0.1, pointRadius: 3, pointBackgroundColor: 'rgba(75, 192, 192, 1)'},
+                            { label: 'Scope 3', data: [1789560, 1678340, 1543920, 1387650, 1245780, null, null, null, null, null, null], borderColor: 'rgba(255, 206, 86, 1)', backgroundColor: 'rgba(255, 206, 86, 0.1)', tension: 0.1, pointRadius: 3, pointBackgroundColor: 'rgba(255, 206, 86, 1)'},
+                            { label: 'Total Emissions', data: [2401010, 2259340, 2086450, 1870400, 1681320, null, null, null, null, null, null], borderColor: 'rgba(255, 99, 132, 1)', backgroundColor: 'rgba(255, 99, 132, 0.1)', tension: 0.1, pointRadius: 3, pointBackgroundColor: 'rgba(255, 99, 132, 1)'},
+                            { label: 'Target', data: [null, null, null, null, 1681320, 1500000, 1350000, 1200000, 1100000, 1000000, 960000], borderColor: 'rgba(153, 102, 255, 1)', borderDash: [5, 5], tension: 0.1, pointRadius: 3, pointBackgroundColor: 'rgba(153, 102, 255, 1)', fill: false }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'tCO₂e' }, ticks: { callback: (v) => (v>=1e6?(v/1e6).toFixed(1)+'M':(v>=1e3?(v/1e3).toFixed(0)+'K':v))}}, x: { title: { display: true, text: 'Year' }}}, plugins: { legend: { position: 'bottom', labels: { font: {size: 10}, padding: 10 }}, tooltip: { mode: 'index', intersect: false }}, interaction: { mode: 'nearest', axis: 'x', intersect: false }}
+                });
+            }
+
+
+            // 3. Target Analysis Bar Chart
+            const targetAnalysisCtx = document.getElementById('targetAnalysisChart')?.getContext('2d');
+            if (targetAnalysisCtx && !charts.targetAnalysisChart) {
+                charts.targetAnalysisChart = new Chart(targetAnalysisCtx, { /* ... bar chart config from previous ... */
+                    type: 'bar',
+                    data: {
+                        labels: ['Base', 'Current', 'Target'],
+                        datasets: [{ label: 'Emissions (tCO₂e)', data: [2400000, 1680000, 960000], backgroundColor: ['rgba(54, 162, 235, 0.7)','rgba(75, 192, 192, 0.7)','rgba(255, 159, 64, 0.7)'], borderColor: ['rgba(54, 162, 235, 1)','rgba(75, 192, 192, 1)','rgba(255, 159, 64, 1)'], borderWidth: 1, barPercentage: 0.6, categoryPercentage: 0.7 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'tCO₂e' }, ticks: { callback: (v) => (v>=1e6?(v/1e6).toFixed(1)+'M':(v>=1e3?(v/1e3).toFixed(0)+'K':v))}}}, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => { let v = c.parsed.y; return (v>=1e6?(v/1e6).toFixed(2)+'M tCO₂e':(v>=1e3?(v/1e3).toFixed(0)+'K tCO₂e':v+' tCO₂e'))}}}}}
+                });
+            }
+
+
+            // 4. Industry Benchmarking Radar Chart
+            const benchmarkingCtx = document.getElementById('industryBenchmarkingChart')?.getContext('2d');
+            if (benchmarkingCtx && !charts.industryBenchmarkingChart) {
+                charts.industryBenchmarkingChart = new Chart(benchmarkingCtx, { /* ... radar chart config from previous ... */
+                    type: 'radar',
+                    data: {
+                        labels: ['Emissions Intensity', 'Scope 3 Management', 'Renewable Energy', 'Target Ambition', 'Reduction Rate'],
+                        datasets: [
+                            { label: 'Tesla', data: [75, 60, 80, 85, 70], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', pointBackgroundColor: 'rgba(54, 162, 235, 1)', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: 'rgba(54, 162, 235, 1)'},
+                            { label: 'Industry Average', data: [60, 50, 55, 65, 58], backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', pointBackgroundColor: 'rgba(255, 206, 86, 1)', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: 'rgba(255, 206, 86, 1)'},
+                            { label: 'Best in Class', data: [90, 85, 95, 92, 88], backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', pointBackgroundColor: 'rgba(75, 192, 192, 1)', pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: 'rgba(75, 192, 192, 1)'}
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 100, pointLabels: { font: { size: 9 }}} }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 }}}}}
+                });
+            }
+        }
+
+
+        function initializeAnalyticsCharts() {
+            const businessUnitCtx = document.getElementById('analyticsBusinessUnitChart')?.getContext('2d');
+            if (businessUnitCtx && !charts.analyticsBusinessUnitChart) {
+                charts.analyticsBusinessUnitChart = new Chart(businessUnitCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Manufacturing', 'Logistics', 'Corporate Offices', 'R&D', 'Retail'],
+                        datasets: [
+                            {
+                                label: 'Previous Year Emissions (tCO₂e)',
+                                data: [120000, 85000, 30000, 45000, 20000],
+                                backgroundColor: 'rgba(156, 163, 175, 0.7)', // Gray
+                                borderColor: 'rgba(156, 163, 175, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Current Year Emissions (tCO₂e)',
+                                data: [110000, 80000, 28000, 42000, 18000],
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)', // Blue
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Emissions (tCO₂e)' }, ticks: { callback: (v) => (v>=1e3?(v/1e3).toFixed(0)+'K':v)} },
+                            x: { title: { display: true, text: 'Business Unit' } }
+                        },
+                        plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
+                    }
+                });
+            }
+        }
+
+
+        function initializeBenchmarksCharts() {
+            const radarDetailCtx = document.getElementById('benchmarkingRadarChartDetail')?.getContext('2d');
+            if (radarDetailCtx && !charts.benchmarkingRadarChartDetail) {
+                 charts.benchmarkingRadarChartDetail = new Chart(radarDetailCtx, { // Similar to dashboard radar, but could have different data/labels
+                    type: 'radar',
+                    data: {
+                        labels: ['Emissions Intensity', 'Scope 3 Coverage', 'Renewable Energy %', 'SBTi Alignment', 'Water Usage', 'Waste Reduction'],
+                        datasets: [
+                            { label: 'Your Company', data: [70, 65, 68, 80, 50, 60], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', pointBackgroundColor: 'rgba(54, 162, 235, 1)'},
+                            { label: 'Automotive Sector Average', data: [60, 50, 55, 65, 58, 52], backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)', pointBackgroundColor: 'rgba(255, 206, 86, 1)'},
+                            { label: 'Top Performer', data: [90, 85, 95, 92, 75, 80], backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', pointBackgroundColor: 'rgba(75, 192, 192, 1)'}
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 100, pointLabels: { font: { size: 9 }}} }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 }}}}}
+                });
+            }
+        }
+
+
+    </script>
+</body>
+</html>
